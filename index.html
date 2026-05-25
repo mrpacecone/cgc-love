@@ -33,7 +33,6 @@ html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
   --rad:   16px;
 }
 
-/* THEMES */
 [data-theme="violet"] {
   --bg:#f3f0ff;--bg2:#e8e0ff;--bg3:#d8d0ff;
   --ac:#7c3aed;--ac2:#5b21b6;--ac3:#a78bfa;--ac4:#ede9fe;
@@ -360,7 +359,60 @@ body {
 .range-arrow { color: var(--ac); font-size: 18px; font-weight: 700; padding-top: 16px; }
 .range-info { font-size: 11px; color: var(--tx3); text-align: center; margin-top: 8px; }
 
-/* IMAGE MANAGER */
+/* ── GITHUB CONFIG BLOCK ──────────────────────────────────────── */
+.gh-config-block {
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1.5px solid var(--ac3);
+  overflow: hidden;
+}
+.gh-config-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: var(--ac4);
+  cursor: pointer;
+  user-select: none;
+}
+.gh-config-header .gh-icon { font-size: 18px; }
+.gh-config-header .gh-title { font-size: 13px; font-weight: 500; color: var(--tx2); flex: 1; }
+.gh-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #d1d5db; flex-shrink: 0;
+  transition: background .3s;
+}
+.gh-status-dot.connected { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,.5); }
+.gh-status-dot.error     { background: #ef4444; }
+.gh-config-body {
+  padding: 12px;
+  display: none; flex-direction: column; gap: 8px;
+}
+.gh-config-body.open { display: flex; }
+.gh-field label { display: block; font-size: 10px; color: var(--tx3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.gh-field input {
+  width: 100%; padding: 8px 10px;
+  border-radius: 8px; border: 1.5px solid var(--ac3);
+  background: var(--bg); color: var(--tx);
+  font-family: var(--font); font-size: 12px; outline: none;
+  transition: border-color .2s;
+}
+.gh-field input:focus { border-color: var(--ac); }
+.gh-field input[type="password"] { letter-spacing: 2px; }
+.gh-row { display: flex; gap: 7px; }
+.gh-row .gh-field { flex: 1; }
+.gh-save-btn {
+  width: 100%; padding: 9px;
+  border-radius: 8px; border: none;
+  background: var(--ac); color: #fff;
+  font-family: var(--font); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: opacity .15s;
+}
+.gh-save-btn:hover { opacity: .88; }
+.gh-note {
+  font-size: 10px; color: var(--tx3); line-height: 1.5;
+  padding: 6px 8px; background: var(--bg2); border-radius: 6px;
+}
+
+/* ── IMAGE MANAGER ─────────────────────────────────────────────── */
 .img-box { background: var(--bg); border-radius: 12px; border: 1.5px dashed var(--ac3); overflow: hidden; }
 
 .img-empty-view { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 14px; }
@@ -402,16 +454,21 @@ body {
 
 .img-edit-area { display: none; padding: 10px 12px; border-top: 1px solid var(--bg3); }
 .img-edit-area.open { display: block; }
+
+/* Image grid with public/private badges */
 .img-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 7px; margin-bottom: 10px;
 }
-.img-thumb-wrap { position: relative; aspect-ratio: 1; }
+.img-thumb-wrap { position: relative; aspect-ratio: 1; cursor: pointer; }
 .img-thumb-wrap img {
   width: 100%; height: 100%;
   object-fit: cover; border-radius: 8px;
-  display: block; border: 1.5px solid var(--ac3);
+  display: block; border: 2px solid var(--ac3);
+  transition: border-color .15s;
 }
+.img-thumb-wrap.is-public img { border-color: #22c55e; }
+.img-thumb-wrap.uploading img { opacity: .55; }
 .del-img-btn {
   position: absolute; top: -5px; right: -5px;
   width: 18px; height: 18px; border-radius: 50%;
@@ -422,6 +479,32 @@ body {
   z-index: 2;
 }
 .del-img-btn:hover { background: var(--ac2); }
+
+/* Public/Private badge */
+.vis-badge {
+  position: absolute; bottom: 4px; left: 4px;
+  background: rgba(0,0,0,.62); color: #fff;
+  border-radius: 5px; font-size: 9px; font-weight: 600;
+  padding: 2px 5px; letter-spacing: .5px;
+  display: flex; align-items: center; gap: 3px;
+  cursor: pointer; transition: background .15s; z-index: 2;
+  user-select: none;
+}
+.vis-badge:hover { background: rgba(0,0,0,.82); }
+.vis-badge.public-badge { background: rgba(34,197,94,.8); }
+.vis-badge.public-badge:hover { background: rgba(34,197,94,1); }
+
+/* Upload progress overlay */
+.upload-overlay {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,.75);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3; font-size: 18px;
+  animation: spinIcon 1s linear infinite;
+}
+@keyframes spinIcon { to { transform: rotate(360deg); } }
+
 .img-warn { font-size: 11px; color: var(--ac); text-align: center; margin-bottom: 8px; }
 
 .add-more-btn, .apply-done-btn {
@@ -435,6 +518,119 @@ body {
 .add-more-btn:hover  { background: var(--bg3); }
 .apply-done-btn { background: var(--ac); color: #fff; margin-bottom: 0; }
 .apply-done-btn:hover { opacity: .88; }
+
+/* Upload status bar */
+.upload-status {
+  display: none; align-items: center; gap: 8px;
+  padding: 8px 10px; background: var(--bg2);
+  border-top: 1px solid var(--bg3);
+  font-size: 11px; color: var(--tx2);
+}
+.upload-status.show { display: flex; }
+.upload-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--ac3);
+  border-top-color: var(--ac);
+  border-radius: 50%;
+  animation: spinIcon .7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── IMAGE PREVIEW SIDEBAR ─────────────────────────────────────── */
+#previewPanel {
+  position: fixed; top: 0; bottom: 0; right: 0;
+  width: min(320px, 94vw);
+  background: var(--bg);
+  z-index: 101;
+  transform: translateX(105%);
+  transition: transform .32s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+  box-shadow: -4px 0 40px rgba(0,0,0,.18);
+}
+#previewPanel.open { transform: translateX(0); }
+
+.preview-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--bg3); flex-shrink: 0;
+  gap: 10px;
+}
+.preview-panel-header .panel-title { font-size: 18px; }
+.preview-counts {
+  font-size: 11px; color: var(--tx3);
+  display: flex; gap: 10px;
+}
+.preview-count-badge {
+  display: flex; align-items: center; gap: 3px;
+  background: var(--ac4); padding: 2px 7px; border-radius: 20px;
+}
+.preview-count-badge.pub { background: rgba(34,197,94,.15); color: #15803d; }
+
+.preview-body {
+  flex: 1; overflow-y: auto; padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.preview-body::-webkit-scrollbar { width: 4px; }
+.preview-body::-webkit-scrollbar-thumb { background: var(--ac3); border-radius: 4px; }
+
+.preview-section-label {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--tx3); padding: 4px 0 6px;
+  border-bottom: 1px solid var(--bg3);
+}
+
+.preview-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+}
+.preview-card {
+  border-radius: 12px; overflow: hidden;
+  border: 2px solid var(--bg3);
+  background: var(--ac4);
+  transition: border-color .2s, transform .15s;
+  position: relative;
+}
+.preview-card:hover { transform: scale(1.02); border-color: var(--ac3); }
+.preview-card.public-card { border-color: rgba(34,197,94,.5); }
+.preview-card img {
+  width: 100%; aspect-ratio: 1;
+  object-fit: cover; display: block;
+}
+.preview-card-label {
+  font-size: 10px; color: var(--tx3);
+  padding: 5px 7px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.preview-card-vis {
+  font-size: 9px; font-weight: 600; letter-spacing: .5px;
+  padding: 1px 5px; border-radius: 4px;
+}
+.preview-card-vis.pub { background: rgba(34,197,94,.2); color: #15803d; }
+.preview-card-vis.prv { background: var(--bg3); color: var(--tx3); }
+
+.preview-copy-row {
+  display: flex; gap: 7px; align-items: stretch;
+  padding: 0 0 4px;
+}
+.preview-share-input {
+  flex: 1; padding: 8px 10px; border-radius: 8px;
+  border: 1.5px solid var(--ac3); background: var(--bg);
+  color: var(--tx); font-family: var(--font); font-size: 11px;
+  outline: none; cursor: text;
+}
+.preview-copy-btn {
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--ac); color: #fff; border: none;
+  font-family: var(--font); font-size: 11px; cursor: pointer;
+  white-space: nowrap; transition: opacity .15s;
+}
+.preview-copy-btn:hover { opacity: .88; }
+
+.preview-empty {
+  text-align: center; padding: 32px 16px;
+  color: var(--tx3); font-size: 13px; line-height: 1.7;
+}
+.preview-empty .pe-icon { font-size: 36px; margin-bottom: 8px; }
 
 /* WHEEL LABELS */
 .wheel-input-row { display: flex; gap: 7px; margin-top: 4px; }
@@ -552,6 +748,7 @@ body {
       <p class="subtitle" id="subtitleLabel">Range 1–365</p>
     </div>
     <div class="header-right">
+      <button class="icon-btn" id="previewBtn" onclick="openPreview()" aria-label="Image Preview" title="Image Preview">🖼</button>
       <button class="icon-btn" id="histBtn" onclick="openHistory()" aria-label="History">&#9200;</button>
       <button class="icon-btn" id="settBtn" onclick="openSettings()" aria-label="Settings">&#9881;</button>
     </div>
@@ -651,6 +848,45 @@ body {
       <div class="range-info" id="rangeInfo">365 possible numbers (1–365)</div>
     </div>
 
+    <!-- GITHUB CLOUD CONFIG -->
+    <div class="setting-block">
+      <span class="s-label">☁️ GitHub Cloud Storage</span>
+      <div class="gh-config-block">
+        <div class="gh-config-header" onclick="toggleGhConfig()">
+          <span class="gh-icon">🐙</span>
+          <span class="gh-title" id="ghConfigTitle">Configure GitHub to save images publicly</span>
+          <span class="gh-status-dot" id="ghStatusDot"></span>
+          <span id="ghChevron" style="color:var(--tx3);font-size:12px">▼</span>
+        </div>
+        <div class="gh-config-body" id="ghConfigBody">
+          <div class="gh-note">
+            ℹ️ Images uploaded to GitHub are stored in your repo and accessible via permanent URLs — even when you share the link with others. Use a <strong>public repo</strong> for images others can see.<br><br>
+            Token needs <code>repo</code> scope. <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--ac)">Create token →</a>
+          </div>
+          <div class="gh-field">
+            <label>GitHub Token (PAT)</label>
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+          </div>
+          <div class="gh-row">
+            <div class="gh-field">
+              <label>Username / Org</label>
+              <input type="text" id="ghOwner" placeholder="your-username">
+            </div>
+            <div class="gh-field">
+              <label>Repository</label>
+              <input type="text" id="ghRepo" placeholder="cgclove-images">
+            </div>
+          </div>
+          <div class="gh-field">
+            <label>Folder path (optional)</label>
+            <input type="text" id="ghPath" placeholder="images/shuffle">
+          </div>
+          <button class="gh-save-btn" onclick="saveGhConfig()">💾 Save & Test Connection</button>
+          <div id="ghTestResult" style="font-size:11px;color:var(--tx3);text-align:center;min-height:16px"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- IMAGE MANAGER -->
     <div class="setting-block">
       <span class="s-label">Images for Shuffle</span>
@@ -676,6 +912,13 @@ body {
               <button class="small-btn clear-btn" onclick="clearAllImages()">Clear</button>
             </div>
           </div>
+
+          <!-- Upload status -->
+          <div class="upload-status" id="uploadStatus">
+            <div class="upload-spinner"></div>
+            <span id="uploadStatusText">Uploading to GitHub…</span>
+          </div>
+
           <div class="img-edit-area" id="imgEditArea">
             <div class="img-grid" id="imgGrid"></div>
             <div class="img-warn" id="imgWarn"></div>
@@ -685,6 +928,10 @@ body {
           </div>
         </div>
 
+      </div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.5;">
+        🟢 <strong>Public</strong> images are stored on GitHub — anyone with the link can view them.<br>
+        🔒 <strong>Private</strong> images are stored locally (this device only). Tap the badge to toggle.
       </div>
     </div>
 
@@ -740,20 +987,43 @@ body {
   </div>
 </div>
 
+<!-- IMAGE PREVIEW SIDEBAR -->
+<div class="overlay" id="previewOverlay" onclick="closePreview()"></div>
+<div id="previewPanel" role="dialog" aria-label="Image Preview">
+  <div class="preview-panel-header">
+    <h2 class="panel-title">📸 Gallery</h2>
+    <div class="preview-counts">
+      <span class="preview-count-badge pub" id="previewPubCount">🟢 0 public</span>
+      <span class="preview-count-badge" id="previewPrvCount">🔒 0 private</span>
+    </div>
+    <button class="close-btn" onclick="closePreview()" aria-label="Close preview">✕</button>
+  </div>
+  <div class="preview-body" id="previewBody">
+    <div class="preview-empty">
+      <div class="pe-icon">🖼️</div>
+      No images yet.<br>Add some in Settings ⚙️
+    </div>
+  </div>
+</div>
+
 <script>
 // ── STATE ──────────────────────────────────────────────────────────
+// images is now an array of objects: { src, public, ghUrl, name }
 const S = {
-  mode:       'number',
-  rangeMin:   1,
-  rangeMax:   365,
-  images:     [],
-  wheelLabels:['1','2','3','4','5','6','7','8','9','10'],
-  wheelAngle: 0,
-  theme:      'rose',
-  soundOn:    true,
-  history:    [],
-  spinning:   false,
+  mode:        'number',
+  rangeMin:    1,
+  rangeMax:    365,
+  images:      [],       // [{src, isPublic, ghUrl, name}]
+  wheelLabels: ['1','2','3','4','5','6','7','8','9','10'],
+  wheelAngle:  0,
+  theme:       'rose',
+  soundOn:     true,
+  history:     [],
+  spinning:    false,
 };
+
+// GitHub config (stored separately, never in shared state)
+let GH = { token: '', owner: '', repo: '', path: '' };
 
 const WHEEL_COLORS = [
   '#e91e63','#c2185b','#f48fb1','#ad1457','#f06292',
@@ -763,6 +1033,7 @@ const WHEEL_COLORS = [
 
 // ── INIT ───────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  loadGhConfig();
   loadState();
   spawnPetals();
   drawWheel();
@@ -800,12 +1071,6 @@ function spawnPetals() {
 // ── MODE ───────────────────────────────────────────────────────────
 function setMode(m, save=true) {
   S.mode = m;
-  ['number','image','wheel'].forEach(id => {
-    const viewId = 'view' + id.charAt(0).toUpperCase() + id.slice(1);
-    document.getElementById(viewId).classList.toggle('hidden', id !== m);
-    const tabId = 'tab' + id.charAt(0).toUpperCase() + (id === 'number' ? 'um' : id === 'image' ? 'mg' : 'hl');
-    // simpler: use data map
-  });
   document.getElementById('viewNumber').classList.toggle('hidden', m !== 'number');
   document.getElementById('viewImage').classList.toggle('hidden',  m !== 'image');
   document.getElementById('viewWheel').classList.toggle('hidden',  m !== 'wheel');
@@ -817,7 +1082,7 @@ function setMode(m, save=true) {
   if (save) saveState();
 }
 
-// ── SETTINGS PANEL ─────────────────────────────────────────────────
+// ── PANELS ─────────────────────────────────────────────────────────
 function openSettings() {
   document.getElementById('settPanel').classList.add('open');
   document.getElementById('settOverlay').classList.add('open');
@@ -838,6 +1103,17 @@ function closeHistory() {
   document.getElementById('histPanel').classList.remove('open');
   document.getElementById('histOverlay').classList.remove('open');
   document.getElementById('histBtn').classList.remove('active');
+}
+function openPreview() {
+  renderPreviewPanel();
+  document.getElementById('previewPanel').classList.add('open');
+  document.getElementById('previewOverlay').classList.add('open');
+  document.getElementById('previewBtn').classList.add('active');
+}
+function closePreview() {
+  document.getElementById('previewPanel').classList.remove('open');
+  document.getElementById('previewOverlay').classList.remove('open');
+  document.getElementById('previewBtn').classList.remove('active');
 }
 
 // ── RANGE ──────────────────────────────────────────────────────────
@@ -879,20 +1155,205 @@ function syncPresetsUI() {
   });
 }
 
+// ── GITHUB CONFIG ──────────────────────────────────────────────────
+function loadGhConfig() {
+  try {
+    const raw = localStorage.getItem('cgclove_gh');
+    if (raw) {
+      Object.assign(GH, JSON.parse(raw));
+      document.getElementById('ghToken').value = GH.token ? '••••••••••••••••' : '';
+      document.getElementById('ghOwner').value = GH.owner;
+      document.getElementById('ghRepo').value  = GH.repo;
+      document.getElementById('ghPath').value  = GH.path;
+      updateGhStatusDot(GH.token && GH.owner && GH.repo ? 'connected' : '');
+      updateGhConfigTitle();
+    }
+  } catch(e) {}
+}
+
+function saveGhConfig() {
+  const tokenInput = document.getElementById('ghToken').value.trim();
+  // If masked placeholder, keep existing token
+  GH.token = tokenInput.startsWith('•') ? GH.token : tokenInput;
+  GH.owner = document.getElementById('ghOwner').value.trim();
+  GH.repo  = document.getElementById('ghRepo').value.trim();
+  GH.path  = document.getElementById('ghPath').value.trim().replace(/^\/|\/$/g, '');
+
+  if (!GH.token || !GH.owner || !GH.repo) {
+    setGhTestResult('⚠️ Please fill in token, username, and repo.', '#b45309');
+    return;
+  }
+
+  localStorage.setItem('cgclove_gh', JSON.stringify(GH));
+  updateGhStatusDot('connected');
+  updateGhConfigTitle();
+  testGhConnection();
+}
+
+async function testGhConnection() {
+  setGhTestResult('Testing…', 'var(--tx3)');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`, {
+      headers: { 'Authorization': `token ${GH.token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const vis = data.private ? '🔒 private repo' : '🌐 public repo';
+      setGhTestResult(`✅ Connected! ${vis} — ${data.full_name}`, '#15803d');
+      updateGhStatusDot('connected');
+    } else {
+      setGhTestResult(`❌ Error ${res.status}: check token & repo name.`, '#dc2626');
+      updateGhStatusDot('error');
+    }
+  } catch(e) {
+    setGhTestResult('❌ Network error — check your connection.', '#dc2626');
+    updateGhStatusDot('error');
+  }
+}
+
+function setGhTestResult(msg, color) {
+  const el = document.getElementById('ghTestResult');
+  el.textContent = msg;
+  el.style.color = color;
+}
+
+function updateGhStatusDot(state) {
+  const dot = document.getElementById('ghStatusDot');
+  dot.className = 'gh-status-dot' + (state ? ' ' + state : '');
+}
+
+function updateGhConfigTitle() {
+  const el = document.getElementById('ghConfigTitle');
+  if (GH.owner && GH.repo) {
+    el.textContent = `${GH.owner}/${GH.repo}`;
+  } else {
+    el.textContent = 'Configure GitHub to save images publicly';
+  }
+}
+
+function toggleGhConfig() {
+  const body = document.getElementById('ghConfigBody');
+  const chev = document.getElementById('ghChevron');
+  const open = body.classList.toggle('open');
+  chev.textContent = open ? '▲' : '▼';
+}
+
+// ── GITHUB UPLOAD ──────────────────────────────────────────────────
+async function uploadToGitHub(base64Data, filename) {
+  if (!GH.token || !GH.owner || !GH.repo) return null;
+
+  // Remove data URL prefix (e.g. "data:image/jpeg;base64,")
+  const content = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
+  const folder  = GH.path ? GH.path + '/' : 'cgclove/';
+  const filePath = folder + filename;
+  const apiUrl   = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${filePath}`;
+
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GH.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `Upload CGC image: ${filename}`,
+        content: content,
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      // Use raw GitHub URL for public access
+      const rawUrl = `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/main/${filePath}`;
+      return rawUrl;
+    } else {
+      console.error('GitHub upload failed:', res.status);
+      return null;
+    }
+  } catch(e) {
+    console.error('GitHub upload error:', e);
+    return null;
+  }
+}
+
 // ── IMAGES ─────────────────────────────────────────────────────────
 function handleImageFiles(e) {
   const files = Array.from(e.target.files);
-  let loaded = 0;
+  if (!files.length) return;
+  e.target.value = '';
+
+  const hasGh = GH.token && GH.owner && GH.repo;
+
   files.forEach(file => {
     const reader = new FileReader();
-    reader.onload = ev => {
-      S.images.push(ev.target.result);
-      loaded++;
-      if (loaded === files.length) { refreshImageUI(); updateSubtitle(); saveState(); }
+    reader.onload = async ev => {
+      const base64 = ev.target.result;
+      const imgEntry = {
+        src:      base64,
+        isPublic: hasGh,   // default public if GitHub is configured
+        ghUrl:    null,
+        name:     file.name,
+        uploading: false,
+      };
+      S.images.push(imgEntry);
+      refreshImageUI();
+      updateSubtitle();
+
+      // Upload to GitHub if configured
+      if (hasGh) {
+        const idx = S.images.indexOf(imgEntry);
+        S.images[idx].uploading = true;
+        showUploadStatus(true, `Uploading ${file.name}…`);
+        refreshImageUI();
+
+        const ts   = Date.now();
+        const ext  = file.name.split('.').pop() || 'jpg';
+        const fname = `img_${ts}_${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const url  = await uploadToGitHub(base64, fname);
+
+        S.images[idx].uploading = false;
+        if (url) {
+          S.images[idx].ghUrl    = url;
+          S.images[idx].isPublic = true;
+          // replace local blob with GitHub URL so it persists everywhere
+          S.images[idx].src      = url;
+        } else {
+          S.images[idx].isPublic = false;
+          // Keep base64 locally but mark private
+        }
+        showUploadStatus(false);
+        refreshImageUI();
+        saveState();
+        renderPreviewPanel();
+      } else {
+        saveState();
+        renderPreviewPanel();
+      }
     };
     reader.readAsDataURL(file);
   });
-  e.target.value = '';
+}
+
+function showUploadStatus(show, msg = '') {
+  const el = document.getElementById('uploadStatus');
+  el.classList.toggle('show', show);
+  if (msg) document.getElementById('uploadStatusText').textContent = msg;
+}
+
+function toggleImageVisibility(i) {
+  const img = S.images[i];
+  if (!img) return;
+
+  if (!img.isPublic && !GH.token) {
+    alert('Connect GitHub in settings to make images public — so anyone can see them!');
+    return;
+  }
+
+  img.isPublic = !img.isPublic;
+  refreshImageUI();
+  renderPreviewPanel();
+  saveState();
 }
 
 function refreshImageUI() {
@@ -906,22 +1367,29 @@ function refreshImageUI() {
   emptyView.style.display = 'none';
   loadedView.classList.add('show');
 
-  // mini thumbnails (max 3 + overflow count)
+  // mini thumbnails
   const mini = document.getElementById('imgMiniThumbs');
-  mini.innerHTML = S.images.slice(0, 3).map(src =>
-    `<img src="${src}" alt="">`
+  mini.innerHTML = S.images.slice(0, 3).map(img =>
+    `<img src="${img.src}" alt="">`
   ).join('');
   if (S.images.length > 3) {
     mini.innerHTML += `<div class="img-mini-more">+${S.images.length - 3}</div>`;
   }
-  document.getElementById('imgSummaryCount').textContent =
-    `${S.images.length} image${S.images.length !== 1 ? 's' : ''}`;
 
-  // full grid
-  document.getElementById('imgGrid').innerHTML = S.images.map((src, i) => `
-    <div class="img-thumb-wrap">
-      <img src="${src}" alt="Image ${i+1}">
+  const pubCount = S.images.filter(i => i.isPublic).length;
+  const prvCount = S.images.length - pubCount;
+  document.getElementById('imgSummaryCount').textContent =
+    `${S.images.length} image${S.images.length !== 1 ? 's' : ''} · 🟢${pubCount} 🔒${prvCount}`;
+
+  // full grid with public/private badges
+  document.getElementById('imgGrid').innerHTML = S.images.map((img, i) => `
+    <div class="img-thumb-wrap ${img.isPublic ? 'is-public' : ''} ${img.uploading ? 'uploading' : ''}" >
+      <img src="${img.src}" alt="Image ${i+1}">
+      ${img.uploading ? '<div class="upload-overlay">⏳</div>' : ''}
       <button class="del-img-btn" onclick="deleteImage(${i})" aria-label="Delete image ${i+1}">✕</button>
+      <div class="vis-badge ${img.isPublic ? 'public-badge' : ''}" onclick="toggleImageVisibility(${i})" title="Toggle public/private">
+        ${img.isPublic ? '🟢 Public' : '🔒 Private'}
+      </div>
     </div>
   `).join('');
 
@@ -935,6 +1403,7 @@ function deleteImage(i) {
   updateSubtitle();
   if (S.images.length === 0) resetImgCircle();
   saveState();
+  renderPreviewPanel();
 }
 
 function clearAllImages() {
@@ -944,6 +1413,7 @@ function clearAllImages() {
   updateSubtitle();
   resetImgCircle();
   saveState();
+  renderPreviewPanel();
 }
 
 function resetImgCircle() {
@@ -963,6 +1433,85 @@ function applyAndCloseImgEdit() {
   document.getElementById('editImgsBtn').textContent = 'Edit';
   updateSubtitle();
   saveState();
+}
+
+// ── PREVIEW PANEL ──────────────────────────────────────────────────
+function renderPreviewPanel() {
+  const body    = document.getElementById('previewBody');
+  const pubImgs = S.images.filter(i => i.isPublic);
+  const prvImgs = S.images.filter(i => !i.isPublic);
+
+  document.getElementById('previewPubCount').textContent = `🟢 ${pubImgs.length} public`;
+  document.getElementById('previewPrvCount').textContent = `🔒 ${prvImgs.length} private`;
+
+  if (!S.images.length) {
+    body.innerHTML = `<div class="preview-empty"><div class="pe-icon">🖼️</div>No images yet.<br>Add some in Settings ⚙️</div>`;
+    return;
+  }
+
+  let html = '';
+
+  if (pubImgs.length) {
+    html += `<div class="preview-section-label">🟢 Public — visible to everyone</div>`;
+    html += `<div class="preview-grid">`;
+    html += pubImgs.map((img, i) => `
+      <div class="preview-card public-card">
+        <img src="${img.src}" alt="${img.name || 'Image'}">
+        <div class="preview-card-label">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">${img.name || 'Image'}</span>
+          <span class="preview-card-vis pub">PUBLIC</span>
+        </div>
+      </div>
+    `).join('');
+    html += `</div>`;
+
+    // Share link for public images
+    if (pubImgs.length > 0 && pubImgs[0].ghUrl) {
+      const shareUrl = window.location.href;
+      html += `
+        <div style="margin-top:4px">
+          <div style="font-size:10px;color:var(--tx3);margin-bottom:6px">📤 Share this page — public images will load for anyone:</div>
+          <div class="preview-copy-row">
+            <input class="preview-share-input" id="shareUrlInput" value="${shareUrl}" readonly onclick="this.select()">
+            <button class="preview-copy-btn" onclick="copyShareUrl()">Copy</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  if (prvImgs.length) {
+    html += `<div class="preview-section-label" style="margin-top:${pubImgs.length?'8px':'0'}">🔒 Private — this device only</div>`;
+    html += `<div class="preview-grid">`;
+    html += prvImgs.map(img => `
+      <div class="preview-card">
+        <img src="${img.src}" alt="${img.name || 'Image'}">
+        <div class="preview-card-label">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">${img.name || 'Image'}</span>
+          <span class="preview-card-vis prv">PRIVATE</span>
+        </div>
+      </div>
+    `).join('');
+    html += `</div>`;
+
+    if (!GH.token) {
+      html += `<div style="font-size:11px;color:var(--tx3);background:var(--bg2);padding:8px 10px;border-radius:8px;margin-top:4px;line-height:1.5">
+        💡 Connect GitHub in Settings to make private images public and share them with others.
+      </div>`;
+    }
+  }
+
+  body.innerHTML = html;
+}
+
+function copyShareUrl() {
+  const el = document.getElementById('shareUrlInput');
+  if (!el) return;
+  navigator.clipboard.writeText(el.value).then(() => {
+    const btn = el.nextElementSibling;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }).catch(() => { el.select(); document.execCommand('copy'); });
 }
 
 // ── WHEEL ──────────────────────────────────────────────────────────
@@ -1011,7 +1560,6 @@ function drawWheel(highlightIdx = -1) {
     ctx.restore();
   }
 
-  // Center circle
   ctx.beginPath(); ctx.arc(cx, cy, 20, 0, 2 * Math.PI);
   ctx.fillStyle = '#fff'; ctx.fill();
   ctx.strokeStyle = WHEEL_COLORS[0]; ctx.lineWidth = 3; ctx.stroke();
@@ -1071,9 +1619,15 @@ function playChime() {
 }
 
 // ── SPIN ───────────────────────────────────────────────────────────
+function getSpinImages() {
+  // For spinning: use all images (public ones have ghUrl as src, private have base64)
+  return S.images.map(i => i.src);
+}
+
 function startSpin() {
   if (S.spinning) return;
-  if (S.mode === 'image'  && S.images.length < 2) { showResult('Add at least 2 images in Settings ⚙', ''); return; }
+  const spinImgs = getSpinImages();
+  if (S.mode === 'image'  && spinImgs.length < 2) { showResult('Add at least 2 images in Settings ⚙', ''); return; }
   if (S.mode === 'number' && S.rangeMax <= S.rangeMin) { showResult('Fix your range in Settings ⚙', ''); return; }
 
   S.spinning = true;
@@ -1107,7 +1661,8 @@ function showSpinFrame() {
     el.textContent = n; el.classList.remove('flash');
     if (S.soundOn) playTick();
   } else {
-    showImageInCircle(S.images[Math.floor(Math.random() * S.images.length)]);
+    const imgs = getSpinImages();
+    showImageInCircle(imgs[Math.floor(Math.random() * imgs.length)]);
   }
 }
 
@@ -1121,7 +1676,8 @@ function landResult() {
     showResult(`🌹 Number ${v} is your destiny!`, `Open your booklet to task #${v}`);
     addHistory({ type: 'number', value: v });
   } else {
-    const v = S.images[Math.floor(Math.random() * S.images.length)];
+    const imgs = getSpinImages();
+    const v = imgs[Math.floor(Math.random() * imgs.length)];
     showImageInCircle(v);
     showResult('🌹 Your destiny image!', 'Fate has chosen this one for you');
     addHistory({ type: 'image', value: v });
@@ -1296,23 +1852,44 @@ function launchConfetti() {
 // ── PERSIST ────────────────────────────────────────────────────────
 function saveState() {
   try {
-    const data = { ...S, images: S.images.slice(0, 12), history: S.history.slice(0, 40) };
-    localStorage.setItem('cgclove_v2', JSON.stringify(data));
-  } catch(e) {}
+    // Only save public images' ghUrls and private base64 (capped to avoid quota)
+    const images = S.images.slice(0, 20).map(img => ({
+      src:      img.isPublic ? img.ghUrl || img.src : img.src,
+      isPublic: img.isPublic,
+      ghUrl:    img.ghUrl,
+      name:     img.name,
+      uploading: false,
+    }));
+    const data = { ...S, images, history: S.history.slice(0, 40) };
+    localStorage.setItem('cgclove_v3', JSON.stringify(data));
+  } catch(e) {
+    // If localStorage is full (too many base64 images), save only public ones
+    try {
+      const images = S.images.filter(i => i.isPublic).map(img => ({
+        src: img.ghUrl || img.src, isPublic: true, ghUrl: img.ghUrl, name: img.name, uploading: false
+      }));
+      const data = { ...S, images, history: S.history.slice(0, 20) };
+      localStorage.setItem('cgclove_v3', JSON.stringify(data));
+    } catch(e2) {}
+  }
 }
 
 function loadState() {
   try {
-    const raw = localStorage.getItem('cgclove_v2');
+    const raw = localStorage.getItem('cgclove_v3');
     if (!raw) return;
     const saved = JSON.parse(raw);
+    // Migrate old format (array of strings) to new format
+    if (saved.images && saved.images.length && typeof saved.images[0] === 'string') {
+      saved.images = saved.images.map(src => ({ src, isPublic: false, ghUrl: null, name: 'image', uploading: false }));
+    }
     Object.assign(S, saved);
     document.getElementById('rangeMin').value = S.rangeMin;
     document.getElementById('rangeMax').value = S.rangeMax;
     document.getElementById('spinSublabel').textContent = `${S.rangeMin} – ${S.rangeMax}`;
     document.getElementById('wheelLabelsInput').value = S.wheelLabels.join(',');
     document.getElementById('soundToggle').checked = S.soundOn;
-    if (S.images.length) showImageInCircle(S.images[0]);
+    if (S.images.length) showImageInCircle(S.images[0].src);
     renderHistoryStrip();
   } catch(e) {}
 }
@@ -1322,7 +1899,7 @@ document.addEventListener('keydown', e => {
   if (e.code === 'Space' && !e.target.matches('input, textarea, button')) {
     e.preventDefault(); startSpin();
   }
-  if (e.code === 'Escape') { closeSettings(); closeHistory(); }
+  if (e.code === 'Escape') { closeSettings(); closeHistory(); closePreview(); }
 });
 </script>
 </body>
